@@ -1,0 +1,97 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Monitor, Smartphone, Headphones, Tv, Watch, Cpu, ShoppingBag, Cookie, Coffee, Milk, Droplets, Package, Sparkles, ArrowRight } from 'lucide-react';
+
+const ELECTRONICS = [
+  { name: 'Smartphones & Mobiles', icon: <Smartphone className="w-5 h-5 text-[#111111]" />, query: 'smartphones', bg: 'bg-[#F7F7F5]' },
+  { name: 'Laptops & Computers', icon: <Monitor className="w-5 h-5 text-[#111111]" />, query: 'laptops', bg: 'bg-[#F7F7F5]' },
+  { name: 'Headphones & Audio', icon: <Headphones className="w-5 h-5 text-[#E8798F]" />, query: 'audio', bg: 'bg-[#FFF0F3]' },
+  { name: 'Smartwatches & Wearables', icon: <Watch className="w-5 h-5 text-[#111111]" />, query: 'wearables', bg: 'bg-[#F7F7F5]' },
+  { name: 'Televisions', icon: <Tv className="w-5 h-5 text-[#111111]" />, query: 'television', bg: 'bg-[#F7F7F5]' },
+  { name: 'Accessories', icon: <Cpu className="w-5 h-5 text-[#111111]" />, query: 'accessories', bg: 'bg-[#F7F7F5]' },
+];
+
+const GROCERY = [
+  { name: 'Milk & Dairy Products', icon: <Milk className="w-5 h-5 text-[#3FA66B]" />, query: 'dairy', bg: 'bg-[#EAF7EE]' },
+  { name: 'Snacks & Munchies', icon: <Cookie className="w-5 h-5 text-[#E8798F]" />, query: 'snacks', bg: 'bg-[#FFF0F3]' },
+  { name: 'Edible Cooking Oils', icon: <Droplets className="w-5 h-5 text-[#3FA66B]" />, query: 'cooking essentials', bg: 'bg-[#EAF7EE]' },
+  { name: 'Rice & Daily Grains', icon: <Package className="w-5 h-5 text-[#3FA66B]" />, query: 'staples', bg: 'bg-[#EAF7EE]' },
+  { name: 'Tea & Coffee Beverages', icon: <Coffee className="w-5 h-5 text-[#3FA66B]" />, query: 'beverages', bg: 'bg-[#EAF7EE]' },
+  { name: 'Personal Care & Soaps', icon: <Sparkles className="w-5 h-5 text-[#E8798F]" />, query: 'personal care', bg: 'bg-[#FFF0F3]' },
+];
+
+export default function CategoriesPage() {
+  return (
+    <div className="min-h-screen bg-white max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      {/* Header */}
+      <div>
+        <h1 className="text-xl font-bold text-[#111111]">
+          Explore Product Categories
+        </h1>
+        <p className="text-xs text-[#6B7280]">Browse categorized comparison tables across electronics and daily groceries</p>
+      </div>
+
+      {/* Electronics Section */}
+      <section className="space-y-3">
+        <div className="flex items-center justify-between pb-2 border-b border-[#E5E7EB]">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 bg-[#111111] text-white rounded flex items-center justify-center">
+              <Monitor className="w-3.5 h-3.5" />
+            </div>
+            <h2 className="text-xs font-bold text-[#111111] uppercase tracking-wider">Electronics & Gadgets</h2>
+          </div>
+          <span className="text-xs text-[#6B7280]">Amazon • Flipkart • Meesho</span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {ELECTRONICS.map((cat) => (
+            <Link
+              key={cat.name}
+              to={`/search?q=${encodeURIComponent(cat.query)}`}
+              className="flex items-center justify-between p-4 bg-white border border-[#E5E7EB] rounded-[14px] hover:border-[#111111] hover:shadow-sm transition-all group"
+            >
+              <div className="flex items-center gap-3">
+                <div className={`p-2 ${cat.bg} rounded-[8px]`}>
+                  {cat.icon}
+                </div>
+                <span className="text-xs font-semibold text-[#111111]">{cat.name}</span>
+              </div>
+              <ArrowRight className="w-4 h-4 text-[#9CA3AF] group-hover:text-[#111111] transition-colors" />
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Grocery Section */}
+      <section className="space-y-3">
+        <div className="flex items-center justify-between pb-2 border-b border-[#E5E7EB]">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 bg-[#EAF7EE] text-[#3FA66B] rounded flex items-center justify-center border border-[#3FA66B]/30">
+              <ShoppingBag className="w-3.5 h-3.5" />
+            </div>
+            <h2 className="text-xs font-bold text-[#111111] uppercase tracking-wider">Grocery & Quick Commerce</h2>
+          </div>
+          <span className="text-xs text-[#6B7280]">Blinkit • Instamart • Zepto • BigBasket • JioMart</span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {GROCERY.map((cat) => (
+            <Link
+              key={cat.name}
+              to={`/search?q=${encodeURIComponent(cat.query)}`}
+              className="flex items-center justify-between p-4 bg-white border border-[#E5E7EB] rounded-[14px] hover:border-[#111111] hover:shadow-sm transition-all group"
+            >
+              <div className="flex items-center gap-3">
+                <div className={`p-2 ${cat.bg} rounded-[8px]`}>
+                  {cat.icon}
+                </div>
+                <span className="text-xs font-semibold text-[#111111]">{cat.name}</span>
+              </div>
+              <ArrowRight className="w-4 h-4 text-[#9CA3AF] group-hover:text-[#111111] transition-colors" />
+            </Link>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}

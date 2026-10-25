@@ -1,0 +1,5 @@
+scrapy>=2.11.0
+python-dotenv>=1.0.1
+psycopg2-binary>=2.9.9
+SQLAlchemy>=2.0.31
+requests>=2.32.3

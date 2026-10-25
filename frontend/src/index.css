@@ -1,0 +1,179 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* ========================================================
+     SHOPWISE AI — WHITE / BLACK / GREEN / LIGHT PINK
+     ======================================================== */
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #FAFAF7;
+  --bg-card: #FFFFFF;
+  --bg-elevated: #FAFAF7;
+  --bg-hover: #F1F1EF;
+
+  --dark: #111111;
+  --dark-hover: #2A2A2A;
+
+  --text-primary: #111111;
+  --text-secondary: #6B7280;
+  --text-muted: #9CA3AF;
+
+  --border: #E5E7EB;
+  --border-light: #F3F4F6;
+
+  /* Primary Brand Accent: Green */
+  --green-bg: #EAF7EE;
+  --green: #3FA66B;
+  --green-dark: #277A4D;
+
+  /* Secondary Accent: Light Pink */
+  --pink-bg: #FFF0F3;
+  --pink: #E8798F;
+  --pink-dark: #C95F75;
+
+  /* Radii */
+  --radius-card: 16px;
+  --radius-btn: 10px;
+  --radius-input: 10px;
+  --radius-badge: 6px;
+
+  /* Shadows */
+  --shadow-subtle: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+.dark {
+  --bg-primary: #111111;
+  --bg-secondary: #181818;
+  --bg-card: #1A1A1A;
+  --bg-elevated: #222222;
+  --bg-hover: #282828;
+
+  --dark: #FFFFFF;
+  --dark-hover: #E5E5E5;
+
+  --text-primary: #FFFFFF;
+  --text-secondary: #A1A1AA;
+  --text-muted: #71717A;
+
+  --border: #2A2A2A;
+  --border-light: #333333;
+
+  --green-bg: #16291F;
+  --green: #3FA66B;
+  --green-dark: #277A4D;
+
+  --pink-bg: #301F24;
+  --pink: #E8798F;
+  --pink-dark: #C95F75;
+
+  --shadow-subtle: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Reusable Components */
+@layer components {
+  /* Primary Button — Black */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#111111] hover:bg-[#2A2A2A] text-white text-sm font-semibold rounded-[10px] transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Secondary Button — White with border */
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-white hover:bg-[#FAFAF7] text-[#111111] border border-[#E5E7EB] text-sm font-semibold rounded-[10px] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Green Brand Button */
+  .btn-green {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#EAF7EE] hover:bg-[#D8EFE0] text-[#277A4D] text-sm font-semibold rounded-[10px] transition-all duration-200 border border-[#3FA66B]/20;
+  }
+
+  /* Pink Offer Button */
+  .btn-pink {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#FFF0F3] hover:bg-[#FFE0E6] text-[#C95F75] text-sm font-semibold rounded-[10px] transition-all duration-200 border border-[#E8798F]/20;
+  }
+
+  /* Card Styles */
+  .card-white {
+    @apply bg-white border border-[#E5E7EB] rounded-[16px] transition-all duration-200 hover:border-[#3FA66B]/30;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  }
+
+  /* Input Styles */
+  .input-clean {
+    @apply w-full bg-[#FAFAF7] border border-[#E5E7EB] rounded-[10px] px-4 py-2.5 text-sm text-[#111111] placeholder-[#6B7280] focus:outline-none focus:bg-white focus:border-[#3FA66B] transition-all;
+  }
+
+  /* Badges */
+  .badge-best-price {
+    @apply text-xs px-2.5 py-0.5 rounded-[6px] font-semibold bg-[#EAF7EE] text-[#277A4D] border border-[#3FA66B]/20;
+  }
+  .badge-discount-pink {
+    @apply text-xs px-2.5 py-0.5 rounded-[6px] font-semibold bg-[#FFF0F3] text-[#C95F75] border border-[#E8798F]/20;
+  }
+  .badge-premium {
+    @apply text-xs px-2.5 py-0.5 rounded-[6px] font-semibold bg-[#EAF7EE] text-[#277A4D] border border-[#3FA66B]/30;
+  }
+  .badge-neutral {
+    @apply text-xs px-2.5 py-0.5 rounded-[6px] font-medium bg-[#FAFAF7] text-[#6B7280] border border-[#E5E7EB];
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.2s ease-out forwards;
+}
+
+/* Skeletons */
+.skeleton-light {
+  background: linear-gradient(90deg, #FAFAF7 0%, #ECECE9 50%, #FAFAF7 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
