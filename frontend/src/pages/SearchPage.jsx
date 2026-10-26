@@ -1,9 +1,44 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
-import { Search, Filter, ArrowUpDown, Package, Sparkles, Smartphone, Laptop, AlertCircle, CheckCircle2, Lock, LogIn, UserPlus } from 'lucide-react';
+import { Search, Filter, ArrowUpDown, Package, Sparkles, Smartphone, Laptop, AlertCircle, CheckCircle2, Lock, LogIn, UserPlus, Zap } from 'lucide-react';
 import api from '../services/api';
 import ProductCard from '../components/ProductCard';
 import { useAuth } from '../context/AuthContext';
+
+// Realistic Product Card Skeleton
+function ProductCardSkeleton() {
+  return (
+    <div className="flex flex-col bg-white border border-[#E5E7EB] rounded-[16px] overflow-hidden">
+      {/* Image area */}
+      <div className="aspect-square bg-[#F7F7F5] skeleton-light relative">
+        <div className="absolute top-3 left-3 w-14 h-5 bg-[#ECECE9] rounded-[6px] skeleton-light" />
+        <div className="absolute top-3 right-3 w-14 h-5 bg-[#ECECE9] rounded-[6px] skeleton-light" />
+      </div>
+      {/* Content area */}
+      <div className="p-4 space-y-3 flex-1">
+        <div className="flex justify-between">
+          <div className="w-16 h-3 bg-[#F7F7F5] rounded skeleton-light" />
+          <div className="w-12 h-3 bg-[#F7F7F5] rounded skeleton-light" />
+        </div>
+        <div className="space-y-1.5">
+          <div className="w-full h-4 bg-[#F7F7F5] rounded skeleton-light" />
+          <div className="w-3/4 h-4 bg-[#F7F7F5] rounded skeleton-light" />
+        </div>
+        <div className="pt-2 border-t border-[#F3F4F6] flex justify-between items-center">
+          <div className="w-10 h-5 bg-[#F7F7F5] rounded skeleton-light" />
+          <div className="w-14 h-4 bg-[#F7F7F5] rounded skeleton-light" />
+        </div>
+        <div className="flex justify-between items-center">
+          <div>
+            <div className="w-20 h-6 bg-[#F7F7F5] rounded skeleton-light mb-1" />
+            <div className="w-24 h-3 bg-[#F7F7F5] rounded skeleton-light" />
+          </div>
+          <div className="w-20 h-8 bg-[#F7F7F5] rounded-[8px] skeleton-light" />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const SORT_OPTIONS = [
   { value: 'relevance', label: 'Relevance' },
@@ -453,13 +488,25 @@ export default function SearchPage() {
 
       {/* Results Grid */}
       {loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-            <div key={i} className="h-72 bg-[#F7F7F5] border border-[#E5E7EB] rounded-[16px] skeleton-light" />
-          ))}
+        <div className="space-y-4">
+          {/* Search Progress Bar */}
+          <div className="flex items-center gap-3 px-1">
+            <div className="flex items-center gap-2 text-xs text-[#3FA66B] font-semibold">
+              <Zap className="w-3.5 h-3.5 animate-pulse" />
+              Searching across 8 platforms...
+            </div>
+            <div className="flex-1 h-1 bg-[#F3F4F6] rounded-full overflow-hidden">
+              <div className="h-full bg-gradient-to-r from-[#3FA66B] to-[#5BCC89] rounded-full animate-progress-bar" />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+              <ProductCardSkeleton key={i} />
+            ))}
+          </div>
         </div>
       ) : sortedProducts.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-in">
           {sortedProducts.map((product) => (
             <ProductCard key={product.id} product={product} requestedQuantity={searchMeta?.detectedQuantity} />
           ))}
@@ -467,12 +514,12 @@ export default function SearchPage() {
       ) : (
         <div className="text-center py-16 bg-[#F7F7F5] border border-[#E5E7EB] rounded-[16px] space-y-3 px-4">
           <Package className="w-12 h-12 text-[#9CA3AF] mx-auto" />
-          <h3 className="text-base font-bold text-[#111111]">No Matching Demo Products Found</h3>
+          <h3 className="text-base font-bold text-[#111111]">No Matching Products Found</h3>
           <p className="text-xs text-[#6B7280] max-w-md mx-auto leading-relaxed">
-            We couldn't find a matching product in the 250 demo catalog.
+            We couldn't find a matching product. Try different keywords.
           </p>
           <p className="text-[11px] text-[#9CA3AF]">
-            Try searching for terms like "Kurkure", "Milk", "5 eggs", "iPhone 15", or "Acer Nitro V15".
+            Try: "Kurkure", "Milk", "5 eggs", "iPhone 15", or "Acer Nitro V15"
           </p>
         </div>
       )}
