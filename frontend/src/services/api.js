@@ -23,21 +23,12 @@ api.interceptors.request.use(
   }
 );
 
-// Response interceptor to handle common error states
+// Response interceptor - just pass errors through
+// Session is only cleared on explicit logout (in AuthContext)
+// Never auto-clear session on 401 to prevent users being kicked out
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // If token expired or unauthorized on protected routes, clear session
-    const isAuthRoute = error.config?.url?.includes('/auth/login') || error.config?.url?.includes('/auth/register');
-    if (error.response && error.response.status === 401 && !isAuthRoute) {
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('user');
-      // Prevent infinite redirect loops if we are already on login page
-      if (!window.location.pathname.includes('/login')) {
-        window.location.href = '/login';
-      }
-    }
     return Promise.reject(error);
   }
 );
