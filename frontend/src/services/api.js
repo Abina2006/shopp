@@ -27,8 +27,9 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // If unauthorized, clear tokens and redirect to login
-    if (error.response && error.response.status === 401) {
+    // If token expired or unauthorized on protected routes, clear session
+    const isAuthRoute = error.config?.url?.includes('/auth/login') || error.config?.url?.includes('/auth/register');
+    if (error.response && error.response.status === 401 && !isAuthRoute) {
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
       localStorage.removeItem('user');
