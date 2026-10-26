@@ -1,24 +1,24 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Monitor, Smartphone, Headphones, Tv, Watch, Cpu, ShoppingBag, Cookie, Coffee, Milk, Droplets, Package, Sparkles, ArrowRight, Lock, LogIn, UserPlus } from 'lucide-react';
+import { Monitor, Smartphone, Headphones, ShoppingBag, Cpu, Coffee, Milk, Droplets, Package, Sparkles, ArrowRight, Lock, LogIn, UserPlus, Cookie } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const ELECTRONICS = [
-  { name: 'Smartphones & Mobiles', icon: <Smartphone className="w-5 h-5 text-[#111111]" />, query: 'smartphones', bg: 'bg-[#F7F7F5]' },
-  { name: 'Laptops & Computers', icon: <Monitor className="w-5 h-5 text-[#111111]" />, query: 'laptops', bg: 'bg-[#F7F7F5]' },
-  { name: 'Headphones & Audio', icon: <Headphones className="w-5 h-5 text-[#E8798F]" />, query: 'audio', bg: 'bg-[#FFF0F3]' },
-  { name: 'Smartwatches & Wearables', icon: <Watch className="w-5 h-5 text-[#111111]" />, query: 'wearables', bg: 'bg-[#F7F7F5]' },
-  { name: 'Televisions', icon: <Tv className="w-5 h-5 text-[#111111]" />, query: 'television', bg: 'bg-[#F7F7F5]' },
-  { name: 'Accessories', icon: <Cpu className="w-5 h-5 text-[#111111]" />, query: 'accessories', bg: 'bg-[#F7F7F5]' },
+  { name: 'Smartphones & Mobiles', icon: <Smartphone className="w-5 h-5 text-[#111111]" />, query: 'smartphone', bg: 'bg-[#F7F7F5]' },
+  { name: 'Laptops & Computers', icon: <Monitor className="w-5 h-5 text-[#111111]" />, query: 'laptop', bg: 'bg-[#F7F7F5]' },
+  { name: 'Headphones & Audio', icon: <Headphones className="w-5 h-5 text-[#E8798F]" />, query: 'headphones', bg: 'bg-[#FFF0F3]' },
+  { name: 'Fashion & Clothing', icon: <ShoppingBag className="w-5 h-5 text-[#E8798F]" />, query: 'dress', bg: 'bg-[#FFF0F3]' },
+  { name: 'Personal Care & Soaps', icon: <Sparkles className="w-5 h-5 text-[#3FA66B]" />, query: 'toothpaste', bg: 'bg-[#EAF7EE]' },
+  { name: 'Stationery & School', icon: <Cpu className="w-5 h-5 text-[#111111]" />, query: 'pen', bg: 'bg-[#F7F7F5]' },
 ];
 
 const GROCERY = [
-  { name: 'Milk & Dairy Products', icon: <Milk className="w-5 h-5 text-[#3FA66B]" />, query: 'dairy', bg: 'bg-[#EAF7EE]' },
-  { name: 'Snacks & Munchies', icon: <Cookie className="w-5 h-5 text-[#E8798F]" />, query: 'snacks', bg: 'bg-[#FFF0F3]' },
-  { name: 'Edible Cooking Oils', icon: <Droplets className="w-5 h-5 text-[#3FA66B]" />, query: 'cooking essentials', bg: 'bg-[#EAF7EE]' },
-  { name: 'Rice & Daily Grains', icon: <Package className="w-5 h-5 text-[#3FA66B]" />, query: 'staples', bg: 'bg-[#EAF7EE]' },
-  { name: 'Tea & Coffee Beverages', icon: <Coffee className="w-5 h-5 text-[#3FA66B]" />, query: 'beverages', bg: 'bg-[#EAF7EE]' },
-  { name: 'Personal Care & Soaps', icon: <Sparkles className="w-5 h-5 text-[#E8798F]" />, query: 'personal care', bg: 'bg-[#FFF0F3]' },
+  { name: 'Milk & Dairy Products', icon: <Milk className="w-5 h-5 text-[#3FA66B]" />, query: 'milk', bg: 'bg-[#EAF7EE]' },
+  { name: 'Snacks & Munchies', icon: <Cookie className="w-5 h-5 text-[#E8798F]" />, query: 'chips', bg: 'bg-[#FFF0F3]' },
+  { name: 'Rice & Daily Grains', icon: <Package className="w-5 h-5 text-[#3FA66B]" />, query: 'rice', bg: 'bg-[#EAF7EE]' },
+  { name: 'Tea & Coffee Beverages', icon: <Coffee className="w-5 h-5 text-[#3FA66B]" />, query: 'tea', bg: 'bg-[#EAF7EE]' },
+  { name: 'Edible Cooking Oils', icon: <Droplets className="w-5 h-5 text-[#3FA66B]" />, query: 'oil', bg: 'bg-[#EAF7EE]' },
+  { name: 'Cold Drinks & Beverages', icon: <Coffee className="w-5 h-5 text-[#E8798F]" />, query: 'soft drink', bg: 'bg-[#FFF0F3]' },
 ];
 
 export default function CategoriesPage() {
