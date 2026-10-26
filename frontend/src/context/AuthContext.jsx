@@ -93,6 +93,11 @@ export const AuthProvider = ({ children }) => {
   };
 
   const requireAuth = (callback, config = {}) => {
+    // Don't block if still loading session from localStorage
+    if (loading) {
+      if (typeof callback === 'function') callback();
+      return true;
+    }
     if (user) {
       if (typeof callback === 'function') callback();
       return true;

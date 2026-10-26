@@ -139,7 +139,7 @@ export default function Navbar() {
             <NavLink onClick={() => handleNavClick('/ai-assistant', 'AI Advisor')} active={isActive('/ai-assistant')} icon={<Sparkles className="w-4 h-4 text-[#3FA66B]" />} label="AI Advisor" />
             <NavLink onClick={() => handleNavClick('/budget', 'Budget Guard')} active={isActive('/budget')} icon={<Wallet className="w-4 h-4 text-[#3FA66B]" />} label="Budget" />
             <NavLink onClick={() => handleNavClick('/wishlist', 'Wishlist')} active={isActive('/wishlist')} icon={<Heart className="w-4 h-4 text-[#E8798F]" />} label="Wishlist" />
-            <NavLink onClick={() => handleNavClick('/cart', 'Cart')} active={isActive('/cart')} icon={<ShoppingCart className="w-4 h-4 text-[#111111]" />} label="Cart" />
+            <NavLink to="/cart" active={isActive('/cart')} icon={<ShoppingCart className="w-4 h-4 text-[#111111]" />} label="Cart" />
           </div>
 
           <div className="hidden md:flex items-center gap-2">
@@ -227,7 +227,7 @@ export default function Navbar() {
             <MobileNavLink onClick={() => handleNavClick('/ai-assistant', 'AI Advisor')} icon={<Sparkles className="w-4 h-4 text-[#3FA66B]" />} label="AI Advisor" active={isActive('/ai-assistant')} />
             <MobileNavLink onClick={() => handleNavClick('/budget', 'Budget Guard')} icon={<Wallet className="w-4 h-4 text-[#3FA66B]" />} label="Budget Guard" active={isActive('/budget')} />
             <MobileNavLink onClick={() => handleNavClick('/wishlist', 'Wishlist')} icon={<Heart className="w-4 h-4 text-[#E8798F]" />} label="Wishlist" active={isActive('/wishlist')} />
-            <MobileNavLink onClick={() => handleNavClick('/cart', 'Cart')} icon={<ShoppingCart className="w-4 h-4" />} label="Cart" active={isActive('/cart')} />
+            <MobileNavLink to="/cart" icon={<ShoppingCart className="w-4 h-4" />} label="Cart" active={isActive('/cart')} />
             {isAuthenticated ? (<><MobileNavLink to="/profile" icon={<User className="w-4 h-4" />} label="Profile" active={isActive('/profile')} /><button onClick={logout} className="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-[#FAFAF7] rounded-lg transition-colors font-medium">Sign Out</button></>) : (<MobileNavLink to="/login" icon={<LogIn className="w-4 h-4" />} label="Sign In / Register" active={isActive('/login')} />)}
           </div>
         )}
