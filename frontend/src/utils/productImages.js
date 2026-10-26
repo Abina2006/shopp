@@ -282,10 +282,91 @@ export function getProductVisual(product = {}) {
 }
 
 export function getReliableProductImage(product = {}) {
+  const name = (product.name || '').toLowerCase();
+
+  // ── Product-specific overrides (checked first, by product name keyword) ──
+  // These ensure each product shows the correct image regardless of DB value
+  if (name.includes('portronics') || name.includes('power bank'))
+    return 'https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?q=80&w=600';
+  if (name.includes('boat airdopes') || name.includes('airdopes alpha'))
+    return 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?q=80&w=600';
+  if (name.includes('apple airpods') || name.includes('airpods pro'))
+    return 'https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?q=80&w=600';
+  if (name.includes('sony wh') || name.includes('noise cancelling headphone'))
+    return 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=600';
+  if (name.includes('jbl flip') || name.includes('bluetooth speaker'))
+    return 'https://images.unsplash.com/photo-1545454675-3531b543be5d?q=80&w=600';
+  if (name.includes('k8 wireless lavalier') || name.includes('lavalier microphone'))
+    return 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?q=80&w=600';
+  if (name.includes('samsung galaxy s24') || name.includes('galaxy s24'))
+    return 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?q=80&w=600';
+  if (name.includes('oneplus 12'))
+    return 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?q=80&w=600';
+  if (name.includes('google pixel 8'))
+    return 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=600';
+  if (name.includes('apple ipad air') || name.includes('ipad air m2'))
+    return 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?q=80&w=600';
+  if (name.includes('www.flipkart') || name.includes('flipkart.com'))
+    return 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?q=80&w=600';
+  if (name.includes('apple watch series 9'))
+    return 'https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?q=80&w=600';
+  if (name.includes('samsung galaxy watch'))
+    return 'https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?q=80&w=600';
+  if (name.includes('hp pavilion') || name.includes('hp laptop'))
+    return 'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?q=80&w=600';
+  if (name.includes('lenovo legion'))
+    return 'https://images.unsplash.com/photo-1603302576837-37561b2e2302?q=80&w=600';
+  if (name.includes('macbook air m3') || name.includes('macbook air'))
+    return 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=600';
+  if (name.includes('macbook pro m4') || name.includes('macbook pro'))
+    return 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=600';
+  if (name.includes('dell xps'))
+    return 'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?q=80&w=600';
+  if (name.includes('pears pure') || name.includes('bathing bar'))
+    return 'https://images.unsplash.com/photo-1607006411601-775c8cc632dc?q=80&w=600';
+  if (name.includes('santoor') || name.includes('turmeric bathing'))
+    return 'https://images.unsplash.com/photo-1607006314144-8869165d491f?q=80&w=600';
+  if (name.includes('tresemme') || name.includes('anti-frizz hair shampoo'))
+    return 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?q=80&w=600';
+  if (name.includes('fogg scent') || name.includes('eau de parfum'))
+    return 'https://images.unsplash.com/photo-1523293182086-7651a899d37f?q=80&w=600';
+  if (name.includes('medimix') || name.includes('ayurvedic'))
+    return 'https://images.unsplash.com/photo-1607006483702-326002f23b12?q=80&w=600';
+  if (name.includes('dettol') || name.includes('germ protection'))
+    return 'https://images.unsplash.com/photo-1590439471364-192aa70c0b53?q=80&w=600';
+  if (name.includes('dove cream') || name.includes('dove') && name.includes('soap'))
+    return 'https://images.unsplash.com/photo-1600857544200-b2f666a9a2ec?q=80&w=600';
+  if (name.includes('nike air zoom') || name.includes('nike') && name.includes('running'))
+    return 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=600';
+  if (name.includes('adidas ultraboost') || name.includes('ultraboost'))
+    return 'https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?q=80&w=600';
+  if (name.includes('crocs classic') || name.includes('crocs'))
+    return 'https://images.unsplash.com/photo-1560769629-975ec94e6a86?q=80&w=600';
+  if (name.includes("levi's") || name.includes('slim fit') && name.includes('jeans'))
+    return 'https://images.unsplash.com/photo-1542272604-780c96856592?q=80&w=600';
+  if (name.includes('kurti') || name.includes('rayon kurti'))
+    return 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?q=80&w=600';
+  if (name.includes('puma classic') || name.includes('fleece pullover hoodie'))
+    return 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?q=80&w=600';
+  if (name.includes('ray-ban aviator') || name.includes('aviator') && name.includes('sunglasses'))
+    return 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=600';
+  if (name.includes('prestige induction') || name.includes('induction cooktop'))
+    return 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?q=80&w=600';
+  if (name.includes('philips') && name.includes('air fryer'))
+    return 'https://images.unsplash.com/photo-1585659722983-3a675dabf23d?q=80&w=600';
+  if (name.includes('tata tea') || name.includes('royal assam'))
+    return 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?q=80&w=600';
+  if (name.includes('daawat') || name.includes('basmati rice'))
+    return 'https://images.unsplash.com/photo-1586201375761-83865001e31c?q=80&w=600';
+  if (name.includes('fortune sunlite') || name.includes('sunflower') && name.includes('oil'))
+    return 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?q=80&w=600';
+
+  // ── If DB has a valid imageUrl, use it ──
   if (product.imageUrl && typeof product.imageUrl === 'string' && product.imageUrl.trim()) {
     return product.imageUrl;
   }
+
+  // ── Category-based fallback ──
   const visual = getProductVisual(product);
   return visual.fallbackImg || 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?q=80&w=600';
 }
-
