@@ -13,15 +13,30 @@ export default function Navbar() {
   const [unreadCount, setUnreadCount] = useState(0);
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout, requireAuth, openAuthModal } = useAuth();
   const searchRef = useRef(null);
   const notifRef = useRef(null);
 
   const handleSearch = (e) => {
     e.preventDefault();
+    if (!requireAuth(null, {
+      title: 'Sign In to Search Products',
+      message: 'Please sign in or create an account to search products, compare prices across 8+ platforms, and view verified deals.'
+    })) {
+      return;
+    }
     if (searchQuery.trim()) {
       navigate('/search?q=' + encodeURIComponent(searchQuery.trim()));
       setMobileOpen(false);
+    }
+  };
+
+  const handleSearchTouch = () => {
+    if (!isAuthenticated) {
+      openAuthModal({
+        title: 'Sign In to Search Products',
+        message: 'Please sign in or create an account to search products, compare prices across 8+ platforms, and view verified deals.'
+      });
     }
   };
 
@@ -71,6 +86,14 @@ export default function Navbar() {
   };
 
   const isActive = (path) => location.pathname === path || (path !== '/' && location.pathname.startsWith(path));
+  const handleNavClick = (path, label) => {
+    requireAuth(() => navigate(path), {
+      title: `Sign In to Access ${label}`,
+      message: `Please sign in or create an account to use ${label} and view live prices.`
+    });
+    setMobileOpen(false);
+  };
+
   const notifTypeColor = (t) => t === 'GREAT_DEAL' ? 'bg-green-100 text-green-800' : t === 'PRICE_DROP' ? 'bg-blue-100 text-blue-800' : 'bg-amber-100 text-amber-800';
   const notifIcon = (t) => t === 'GREAT_DEAL' ? '🏆' : t === 'PRICE_DROP' ? '📉' : '🏷️';
 
@@ -91,17 +114,32 @@ export default function Navbar() {
           <form onSubmit={handleSearch} className="flex-1 max-w-xl hidden md:flex items-center">
             <div className="relative w-full">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6B7280]" />
-              <input ref={searchRef} type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search products, brands, groceries, electronics..." className="w-full pl-10 pr-20 py-2 bg-[#FAFAF7] border border-[#E5E7EB] rounded-[10px] text-sm text-[#111111] placeholder:text-[#6B7280] focus:outline-none focus:bg-white focus:border-[#3FA66B] transition-all" />
+              <input
+                ref={searchRef}
+                type="text"
+                value={searchQuery}
+                onFocus={handleSearchTouch}
+                onClick={handleSearchTouch}
+                onChange={(e) => {
+                  if (!isAuthenticated) {
+                    handleSearchTouch();
+                    return;
+                  }
+                  setSearchQuery(e.target.value);
+                }}
+                placeholder="Search products, brands, groceries, electronics..."
+                className="w-full pl-10 pr-20 py-2 bg-[#FAFAF7] border border-[#E5E7EB] rounded-[10px] text-sm text-[#111111] placeholder:text-[#6B7280] focus:outline-none focus:bg-white focus:border-[#3FA66B] transition-all"
+              />
               <button type="submit" className="absolute right-1.5 top-1/2 -translate-y-1/2 px-3 py-1 bg-[#111111] hover:bg-[#2A2A2A] text-white text-xs font-semibold rounded-[6px] transition-colors">Search</button>
             </div>
           </form>
 
           <div className="hidden md:flex items-center gap-1.5">
-            <NavLink to="/categories" active={isActive('/categories')} icon={<Grid className="w-4 h-4" />} label="Categories" />
-            <NavLink to="/ai-assistant" active={isActive('/ai-assistant')} icon={<Sparkles className="w-4 h-4 text-[#3FA66B]" />} label="AI Advisor" />
-            <NavLink to="/budget" active={isActive('/budget')} icon={<Wallet className="w-4 h-4 text-[#3FA66B]" />} label="Budget" />
-            <NavLink to="/wishlist" active={isActive('/wishlist')} icon={<Heart className="w-4 h-4 text-[#E8798F]" />} label="Wishlist" />
-            <NavLink to="/cart" active={isActive('/cart')} icon={<ShoppingCart className="w-4 h-4 text-[#111111]" />} label="Cart" />
+            <NavLink onClick={() => handleNavClick('/categories', 'Categories')} active={isActive('/categories')} icon={<Grid className="w-4 h-4" />} label="Categories" />
+            <NavLink onClick={() => handleNavClick('/ai-assistant', 'AI Advisor')} active={isActive('/ai-assistant')} icon={<Sparkles className="w-4 h-4 text-[#3FA66B]" />} label="AI Advisor" />
+            <NavLink onClick={() => handleNavClick('/budget', 'Budget Guard')} active={isActive('/budget')} icon={<Wallet className="w-4 h-4 text-[#3FA66B]" />} label="Budget" />
+            <NavLink onClick={() => handleNavClick('/wishlist', 'Wishlist')} active={isActive('/wishlist')} icon={<Heart className="w-4 h-4 text-[#E8798F]" />} label="Wishlist" />
+            <NavLink onClick={() => handleNavClick('/cart', 'Cart')} active={isActive('/cart')} icon={<ShoppingCart className="w-4 h-4 text-[#111111]" />} label="Cart" />
           </div>
 
           <div className="hidden md:flex items-center gap-2">
@@ -167,15 +205,29 @@ export default function Navbar() {
             <form onSubmit={handleSearch} className="mb-2">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6B7280]" />
-                <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search products..." className="input-clean pl-9 pr-4 py-2" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onFocus={handleSearchTouch}
+                  onClick={handleSearchTouch}
+                  onChange={(e) => {
+                    if (!isAuthenticated) {
+                      handleSearchTouch();
+                      return;
+                    }
+                    setSearchQuery(e.target.value);
+                  }}
+                  placeholder="Search products..."
+                  className="input-clean pl-9 pr-4 py-2"
+                />
               </div>
             </form>
             <MobileNavLink to="/" icon={<Search className="w-4 h-4" />} label="Home" active={location.pathname === '/'} />
-            <MobileNavLink to="/categories" icon={<Grid className="w-4 h-4" />} label="Categories" active={isActive('/categories')} />
-            <MobileNavLink to="/ai-assistant" icon={<Sparkles className="w-4 h-4 text-[#3FA66B]" />} label="AI Advisor" active={isActive('/ai-assistant')} />
-            <MobileNavLink to="/budget" icon={<Wallet className="w-4 h-4 text-[#3FA66B]" />} label="Budget Guard" active={isActive('/budget')} />
-            <MobileNavLink to="/wishlist" icon={<Heart className="w-4 h-4 text-[#E8798F]" />} label="Wishlist" active={isActive('/wishlist')} />
-            <MobileNavLink to="/cart" icon={<ShoppingCart className="w-4 h-4" />} label="Cart" active={isActive('/cart')} />
+            <MobileNavLink onClick={() => handleNavClick('/categories', 'Categories')} icon={<Grid className="w-4 h-4" />} label="Categories" active={isActive('/categories')} />
+            <MobileNavLink onClick={() => handleNavClick('/ai-assistant', 'AI Advisor')} icon={<Sparkles className="w-4 h-4 text-[#3FA66B]" />} label="AI Advisor" active={isActive('/ai-assistant')} />
+            <MobileNavLink onClick={() => handleNavClick('/budget', 'Budget Guard')} icon={<Wallet className="w-4 h-4 text-[#3FA66B]" />} label="Budget Guard" active={isActive('/budget')} />
+            <MobileNavLink onClick={() => handleNavClick('/wishlist', 'Wishlist')} icon={<Heart className="w-4 h-4 text-[#E8798F]" />} label="Wishlist" active={isActive('/wishlist')} />
+            <MobileNavLink onClick={() => handleNavClick('/cart', 'Cart')} icon={<ShoppingCart className="w-4 h-4" />} label="Cart" active={isActive('/cart')} />
             {isAuthenticated ? (<><MobileNavLink to="/profile" icon={<User className="w-4 h-4" />} label="Profile" active={isActive('/profile')} /><button onClick={logout} className="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-[#FAFAF7] rounded-lg transition-colors font-medium">Sign Out</button></>) : (<MobileNavLink to="/login" icon={<LogIn className="w-4 h-4" />} label="Sign In / Register" active={isActive('/login')} />)}
           </div>
         )}
@@ -184,10 +236,24 @@ export default function Navbar() {
   );
 }
 
-function NavLink({ to, active, icon, label }) {
+function NavLink({ to, active, icon, label, onClick }) {
+  if (onClick) {
+    return (
+      <button onClick={onClick} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] text-xs font-semibold transition-all ${active ? 'bg-[#111111] text-white' : 'text-[#6B7280] hover:bg-[#FAFAF7] hover:text-[#111111]'}`}>
+        {icon}<span>{label}</span>
+      </button>
+    );
+  }
   return (<Link to={to} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] text-xs font-semibold transition-all ${active ? 'bg-[#111111] text-white' : 'text-[#6B7280] hover:bg-[#FAFAF7] hover:text-[#111111]'}`}>{icon}<span>{label}</span></Link>);
 }
 
-function MobileNavLink({ to, icon, label, active }) {
+function MobileNavLink({ to, icon, label, active, onClick }) {
+  if (onClick) {
+    return (
+      <button onClick={onClick} className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${active ? 'bg-[#111111] text-white' : 'text-[#6B7280] hover:bg-[#FAFAF7] hover:text-[#111111]'}`}>
+        {icon}<span>{label}</span>
+      </button>
+    );
+  }
   return (<Link to={to} className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${active ? 'bg-[#111111] text-white' : 'text-[#6B7280] hover:bg-[#FAFAF7] hover:text-[#111111]'}`}>{icon}<span>{label}</span></Link>);
 }

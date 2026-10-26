@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, Sparkles, ArrowRight, ShieldCheck, TrendingDown, Smartphone, Monitor, Headphones, Cookie, ShoppingBag, Package, CheckCircle2 } from 'lucide-react';
+import { Search, Sparkles, ArrowRight, ShieldCheck, TrendingDown, Smartphone, Monitor, Headphones, Cookie, ShoppingBag, Package, CheckCircle2, Lock, LogIn, UserPlus } from 'lucide-react';
 import api from '../services/api';
 import ProductCard from '../components/ProductCard';
+import { useAuth } from '../context/AuthContext';
 
 const CATEGORIES = [
   { name: 'Smartphones', icon: <Smartphone className="w-4 h-4 text-[#111111]" />, query: 'smartphones', bg: 'bg-[#FAFAF7]' },
@@ -22,10 +23,15 @@ export default function HomePage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { isAuthenticated, requireAuth, openAuthModal } = useAuth();
 
   useEffect(() => {
-    loadProducts();
-  }, []);
+    if (isAuthenticated) {
+      loadProducts();
+    } else {
+      setLoading(false);
+    }
+  }, [isAuthenticated]);
 
   const loadProducts = async () => {
     try {
@@ -40,9 +46,34 @@ export default function HomePage() {
 
   const handleSearch = (e) => {
     e.preventDefault();
+    if (!requireAuth(null, {
+      title: 'Sign In to Compare Prices',
+      message: 'Please sign in or create an account to search products, compare prices across 8+ platforms, and view verified deals.'
+    })) {
+      return;
+    }
     if (searchQuery.trim()) {
       navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
     }
+  };
+
+  const handleSearchTouch = () => {
+    if (!isAuthenticated) {
+      openAuthModal({
+        title: 'Sign In to Search & Compare',
+        message: 'Please sign in or create an account to search products, compare prices across Amazon, Flipkart, Blinkit & Zepto, and view verified deals.'
+      });
+    }
+  };
+
+  const handleCategoryClick = (e, query) => {
+    e.preventDefault();
+    requireAuth(() => {
+      navigate(`/search?q=${encodeURIComponent(query)}`);
+    }, {
+      title: 'Sign In to Browse Categories',
+      message: 'Please sign in or create an account to browse categories, compare prices, and explore deals.'
+    });
   };
 
   return (
@@ -77,7 +108,15 @@ export default function HomePage() {
               <input
                 type="text"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={handleSearchTouch}
+                onClick={handleSearchTouch}
+                onChange={(e) => {
+                  if (!isAuthenticated) {
+                    handleSearchTouch();
+                    return;
+                  }
+                  setSearchQuery(e.target.value);
+                }}
                 placeholder="Search Kurkure, Milk, iPhone, Laptop, Oil, Tea..."
                 className="w-full bg-transparent border-none text-sm text-[#111111] px-3 py-2.5 focus:outline-none placeholder:text-[#6B7280]"
               />
@@ -111,17 +150,20 @@ export default function HomePage() {
             <h2 className="text-lg font-bold text-[#111111]">Popular Categories</h2>
             <p className="text-xs text-[#6B7280]">Browse electronics and grocery categories</p>
           </div>
-          <Link to="/categories" className="text-xs font-semibold text-[#111111] hover:text-[#3FA66B] flex items-center gap-1 transition-colors">
+          <button
+            onClick={(e) => handleCategoryClick(e, 'all')}
+            className="text-xs font-semibold text-[#111111] hover:text-[#3FA66B] flex items-center gap-1 transition-colors"
+          >
             All Categories <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
+          </button>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {CATEGORIES.map((cat) => (
-            <Link
+            <button
               key={cat.name}
-              to={`/search?q=${encodeURIComponent(cat.query)}`}
-              className="flex items-center gap-2.5 p-3.5 bg-white border border-[#E5E7EB] rounded-[14px] hover:border-[#3FA66B]/40 hover:shadow-sm transition-all group"
+              onClick={(e) => handleCategoryClick(e, cat.query)}
+              className="flex items-center gap-2.5 p-3.5 bg-white border border-[#E5E7EB] rounded-[14px] hover:border-[#3FA66B]/40 hover:shadow-sm transition-all group text-left cursor-pointer"
             >
               <div className={`p-2 ${cat.bg} rounded-[8px] shrink-0`}>
                 {cat.icon}
@@ -129,7 +171,7 @@ export default function HomePage() {
               <span className="text-xs font-semibold text-[#111111] leading-tight">
                 {cat.name}
               </span>
-            </Link>
+            </button>
           ))}
         </div>
       </section>
@@ -141,12 +183,50 @@ export default function HomePage() {
             <h2 className="text-lg font-bold text-[#111111]">Trending Comparisons</h2>
             <p className="text-xs text-[#6B7280]">Verified prices across Amazon, Flipkart, Blinkit, Instamart & Zepto</p>
           </div>
-          <Link to="/search?q=all" className="text-xs font-semibold text-[#111111] hover:text-[#3FA66B] flex items-center gap-1 transition-colors">
-            View All Products <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
+          {isAuthenticated && (
+            <Link to="/search?q=all" className="text-xs font-semibold text-[#111111] hover:text-[#3FA66B] flex items-center gap-1 transition-colors">
+              View All Products <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          )}
         </div>
 
-        {loading ? (
+        {!isAuthenticated ? (
+          <div className="relative overflow-hidden bg-gradient-to-b from-[#FAFAF7] to-white border border-[#E5E7EB] rounded-[24px] p-8 sm:p-14 text-center max-w-3xl mx-auto space-y-6 shadow-sm">
+            <div className="w-16 h-16 bg-[#EAF7EE] text-[#3FA66B] border border-[#3FA66B]/30 rounded-2xl flex items-center justify-center mx-auto shadow-sm">
+              <Lock className="w-8 h-8" />
+            </div>
+
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#EAF7EE] text-[#277A4D] rounded-full text-xs font-semibold">
+                <Sparkles className="w-3.5 h-3.5" />
+                Live Prices & Deals Locked
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-extrabold text-[#111111] tracking-tight">
+                Sign in or Create an Account to View Prices
+              </h3>
+              <p className="text-sm text-[#6B7280] max-w-lg mx-auto leading-relaxed">
+                Compare verified prices across Amazon, Flipkart, Blinkit, Instamart & Zepto, track price drop alerts, and calculate your lowest grocery basket.
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+              <Link
+                to="/login"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#111111] hover:bg-[#2A2A2A] text-white py-3 px-8 rounded-[12px] font-semibold text-sm transition-all shadow-sm"
+              >
+                <LogIn className="w-4 h-4 text-[#3FA66B]" />
+                Sign In to View Prices
+              </Link>
+              <Link
+                to="/register"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white hover:bg-[#FAFAF7] text-[#111111] border border-[#E5E7EB] hover:border-[#111111] py-3 px-8 rounded-[12px] font-semibold text-sm transition-all"
+              >
+                <UserPlus className="w-4 h-4 text-[#6B7280]" />
+                Create Free Account
+              </Link>
+            </div>
+          </div>
+        ) : loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
               <div key={i} className="h-72 bg-[#FAFAF7] border border-[#E5E7EB] rounded-[16px] skeleton-light" />

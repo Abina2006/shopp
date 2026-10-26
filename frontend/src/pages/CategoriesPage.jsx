@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Monitor, Smartphone, Headphones, Tv, Watch, Cpu, ShoppingBag, Cookie, Coffee, Milk, Droplets, Package, Sparkles, ArrowRight } from 'lucide-react';
+import { Monitor, Smartphone, Headphones, Tv, Watch, Cpu, ShoppingBag, Cookie, Coffee, Milk, Droplets, Package, Sparkles, ArrowRight, Lock, LogIn, UserPlus } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const ELECTRONICS = [
   { name: 'Smartphones & Mobiles', icon: <Smartphone className="w-5 h-5 text-[#111111]" />, query: 'smartphones', bg: 'bg-[#F7F7F5]' },
@@ -21,6 +22,37 @@ const GROCERY = [
 ];
 
 export default function CategoriesPage() {
+  const { isAuthenticated } = useAuth();
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-[75vh] flex items-center justify-center px-4 py-12 bg-white">
+        <div className="w-full max-w-md bg-white border border-[#E5E7EB] rounded-[24px] p-8 text-center space-y-6 shadow-sm">
+          <div className="w-16 h-16 bg-[#EAF7EE] text-[#3FA66B] border border-[#3FA66B]/30 rounded-2xl flex items-center justify-center mx-auto shadow-sm">
+            <Lock className="w-8 h-8" />
+          </div>
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#EAF7EE] text-[#277A4D] rounded-full text-xs font-semibold">
+              <Sparkles className="w-3.5 h-3.5" />
+              Sign In Required
+            </div>
+            <h2 className="text-2xl font-bold text-[#111111]">Sign In to Browse Categories</h2>
+            <p className="text-xs sm:text-sm text-[#6B7280] leading-relaxed">
+              Explore categorized price comparisons across 8 platforms by signing in or creating your account.
+            </p>
+          </div>
+          <div className="space-y-2.5 pt-2">
+            <Link to="/login" className="btn-primary w-full py-3 text-sm flex items-center justify-center gap-2">
+              <LogIn className="w-4 h-4 text-[#3FA66B]" /> Sign In to Your Account
+            </Link>
+            <Link to="/register" className="btn-secondary w-full py-3 text-sm flex items-center justify-center gap-2">
+              <UserPlus className="w-4 h-4 text-[#6B7280]" /> Create a Free Account
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-white max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Header */}

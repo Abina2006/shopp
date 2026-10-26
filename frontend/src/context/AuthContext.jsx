@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import api from '../services/api';
+import AuthPromptModal from '../components/AuthPromptModal';
 
 const AuthContext = createContext(null);
 
@@ -79,6 +80,27 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authModalConfig, setAuthModalConfig] = useState({});
+
+  const openAuthModal = (config = {}) => {
+    setAuthModalConfig(config);
+    setAuthModalOpen(true);
+  };
+
+  const closeAuthModal = () => {
+    setAuthModalOpen(false);
+  };
+
+  const requireAuth = (callback, config = {}) => {
+    if (user) {
+      if (typeof callback === 'function') callback();
+      return true;
+    }
+    openAuthModal(config);
+    return false;
+  };
+
   const isAuthenticated = !!user;
   const isAdmin = user?.role === 'ADMIN';
 
@@ -89,10 +111,23 @@ export const AuthProvider = ({ children }) => {
     isAdmin,
     login,
     registerUserAction,
-    logout
+    logout,
+    openAuthModal,
+    closeAuthModal,
+    requireAuth
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+      <AuthPromptModal
+        isOpen={authModalOpen}
+        onClose={closeAuthModal}
+        title={authModalConfig.title}
+        message={authModalConfig.message}
+      />
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => {
