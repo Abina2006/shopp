@@ -81,6 +81,14 @@ export default function SearchPage() {
   });
 
   useEffect(() => {
+    if (categoryParam) {
+      setSelectedCategory(categoryParam);
+    } else if (!query) {
+      setSelectedCategory('All');
+    }
+  }, [categoryParam]);
+
+  useEffect(() => {
     if (isAuthenticated) {
       fetchProducts();
     }
@@ -159,14 +167,28 @@ export default function SearchPage() {
   const sortedProducts = [...products]
     .filter(p => {
       if (selectedCategory === 'All') return true;
-      const targetOption = FIXED_CATEGORIES.find(c => c.label === selectedCategory || c.cat === selectedCategory);
-      if (!targetOption) return (p.category || '').toLowerCase() === selectedCategory.toLowerCase();
-      if (targetOption.cat === 'All') return true;
-      if (targetOption.subcat) {
-        return (p.category || '').toLowerCase() === targetOption.cat.toLowerCase() &&
-               (p.subcategory || '').toLowerCase() === targetOption.subcat.toLowerCase();
+      const catLower = (p.category || '').toLowerCase();
+      const subcatLower = (p.subcategory || '').toLowerCase();
+
+      if (selectedCategory === 'Mobile') {
+        return subcatLower === 'mobiles' || subcatLower === 'mobile' || ['smartphones', 'mobile', 'mobiles'].includes(catLower);
       }
-      return (p.category || '').toLowerCase() === targetOption.cat.toLowerCase();
+      if (selectedCategory === 'Laptop') {
+        return subcatLower === 'laptops' || subcatLower === 'laptop' || ['computers', 'laptops', 'laptop'].includes(catLower);
+      }
+      if (selectedCategory === 'Grocery') {
+        return ['grocery', 'groceries', 'dairy', 'staples', 'cooking essentials'].includes(catLower);
+      }
+      if (selectedCategory === 'Snacks & Beverages') {
+        return ['snacks & beverages', 'snacks', 'beverages'].includes(catLower);
+      }
+      if (selectedCategory === 'Departmental') {
+        return ['departmental', 'general', 'personal care'].includes(catLower);
+      }
+      if (selectedCategory === 'Fashion') {
+        return ['fashion', 'clothing', 'footwear'].includes(catLower);
+      }
+      return catLower === selectedCategory.toLowerCase() || subcatLower === selectedCategory.toLowerCase();
     })
     .sort((a, b) => {
       const getMinPrice = (p) => {
@@ -233,10 +255,11 @@ export default function SearchPage() {
           <div className="relative flex-1">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6B7280]" />
             <input
+              key={query || selectedCategory}
               name="q"
               type="text"
               defaultValue={query === 'all' ? '' : query}
-              placeholder="Search products, groceries, electronics, laptops..."
+              placeholder="Search products, brands (e.g. Lenovo, iPhone, Samsung)..."
               className="input-clean pl-10 pr-4 py-2.5 text-sm"
             />
           </div>
@@ -254,7 +277,13 @@ export default function SearchPage() {
             {categories.map((cat) => (
               <button
                 key={cat}
-                onClick={() => setSelectedCategory(cat)}
+                onClick={() => {
+                  setSelectedCategory(cat);
+                  const newParams = {};
+                  if (cat !== 'All') newParams.category = cat;
+                  if (query && query !== 'all') newParams.q = query;
+                  setSearchParams(newParams);
+                }}
                 className={`px-3 py-1 rounded-[6px] transition-colors font-medium ${
                   selectedCategory === cat
                     ? 'bg-[#111111] text-white'
@@ -468,7 +497,7 @@ export default function SearchPage() {
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
           <h1 className="text-base font-bold text-[#111111]">
-            {query && query !== 'all' ? `Results for "${query}"` : 'All Products'}
+            {query && query !== 'all' ? `Results for "${query}"` : (selectedCategory !== 'All' ? `${selectedCategory} Products` : 'All Products')}
             <span className="text-xs font-normal text-[#6B7280] ml-2">
               ({sortedProducts.length} {sortedProducts.length === 1 ? 'item' : 'items'} found)
             </span>

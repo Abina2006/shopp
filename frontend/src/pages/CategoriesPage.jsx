@@ -3,23 +3,23 @@ import { Link } from 'react-router-dom';
 import { Monitor, Smartphone, Headphones, ShoppingBag, Cpu, Coffee, Droplets, Package, Sparkles, ArrowRight, Lock, LogIn, UserPlus, Watch, Tv, Shirt, Footprints, Zap } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
-// These queries are mapped to exact categories in the backend DB
+// Clean category mappings - no hardcoded brands so all products display by default
 const ELECTRONICS = [
-  { name: 'Smartphones & Mobiles',  icon: <Smartphone className="w-5 h-5 text-[#111111]" />,  query: 'Samsung Galaxy OnePlus Pixel iPhone',  bg: 'bg-[#F7F7F5]' },
-  { name: 'Laptops & Computers',    icon: <Monitor className="w-5 h-5 text-[#111111]" />,     query: 'laptop MacBook HP Dell Lenovo',       bg: 'bg-[#F7F7F5]' },
-  { name: 'Headphones & Audio',     icon: <Headphones className="w-5 h-5 text-[#E8798F]" />,  query: 'boAt Sony JBL AirPods headphones',   bg: 'bg-[#FFF0F3]' },
-  { name: 'Smartwatches',           icon: <Watch className="w-5 h-5 text-[#3FA66B]" />,       query: 'Samsung Galaxy Watch Apple Watch',   bg: 'bg-[#EAF7EE]' },
-  { name: 'Home Appliances',        icon: <Zap className="w-5 h-5 text-[#111111]" />,         query: 'Prestige Air Fryer Philips induction',bg: 'bg-[#F7F7F5]' },
-  { name: 'Accessories & General',  icon: <Cpu className="w-5 h-5 text-[#111111]" />,        query: 'power bank Portronics',             bg: 'bg-[#F7F7F5]' },
+  { name: 'Smartphones & Mobiles',  icon: <Smartphone className="w-5 h-5 text-[#111111]" />,  query: 'phone', category: 'Mobile', bg: 'bg-[#F7F7F5]' },
+  { name: 'Laptops & Computers',    icon: <Monitor className="w-5 h-5 text-[#111111]" />,     query: 'laptop', category: 'Laptop', bg: 'bg-[#F7F7F5]' },
+  { name: 'Headphones & Audio',     icon: <Headphones className="w-5 h-5 text-[#E8798F]" />,  query: 'headphones', bg: 'bg-[#FFF0F3]' },
+  { name: 'Smartwatches',           icon: <Watch className="w-5 h-5 text-[#3FA66B]" />,       query: 'smartwatch', bg: 'bg-[#EAF7EE]' },
+  { name: 'Home Appliances',        icon: <Zap className="w-5 h-5 text-[#111111]" />,         query: 'appliances', bg: 'bg-[#F7F7F5]' },
+  { name: 'Accessories & General',  icon: <Cpu className="w-5 h-5 text-[#111111]" />,        query: 'power bank', bg: 'bg-[#F7F7F5]' },
 ];
 
 const FASHION = [
-  { name: 'Fashion & Clothing',     icon: <Shirt className="w-5 h-5 text-[#E8798F]" />,      query: "Levi's Kurti Puma hoodie jeans",     bg: 'bg-[#FFF0F3]' },
-  { name: 'Footwear & Shoes',       icon: <Footprints className="w-5 h-5 text-[#111111]" />, query: 'Nike Adidas Crocs shoes running',    bg: 'bg-[#F7F7F5]' },
-  { name: 'Personal Care & Soaps',  icon: <Sparkles className="w-5 h-5 text-[#3FA66B]" />,   query: 'Pears Dove Dettol soap shampoo',     bg: 'bg-[#EAF7EE]' },
-  { name: 'Fragrances & Deodorants',icon: <Droplets className="w-5 h-5 text-[#E8798F]" />,   query: 'Fogg perfume Eau De Parfum',         bg: 'bg-[#FFF0F3]' },
-  { name: 'Sunglasses',             icon: <Tv className="w-5 h-5 text-[#111111]" />,         query: 'Ray-Ban Aviator sunglasses',         bg: 'bg-[#F7F7F5]' },
-  { name: 'Groceries & Kitchen',    icon: <Package className="w-5 h-5 text-[#3FA66B]" />,    query: 'Tata Tea Daawat rice Fortune oil',   bg: 'bg-[#EAF7EE]' },
+  { name: 'Fashion & Clothing',     icon: <Shirt className="w-5 h-5 text-[#E8798F]" />,      query: 'fashion', category: 'Fashion', bg: 'bg-[#FFF0F3]' },
+  { name: 'Footwear & Shoes',       icon: <Footprints className="w-5 h-5 text-[#111111]" />, query: 'shoes', bg: 'bg-[#F7F7F5]' },
+  { name: 'Personal Care & Soaps',  icon: <Sparkles className="w-5 h-5 text-[#3FA66B]" />,   query: 'soap', bg: 'bg-[#EAF7EE]' },
+  { name: 'Fragrances & Deodorants',icon: <Droplets className="w-5 h-5 text-[#E8798F]" />,   query: 'perfume', bg: 'bg-[#FFF0F3]' },
+  { name: 'Sunglasses',             icon: <Tv className="w-5 h-5 text-[#111111]" />,         query: 'sunglasses', bg: 'bg-[#F7F7F5]' },
+  { name: 'Groceries & Kitchen',    icon: <Package className="w-5 h-5 text-[#3FA66B]" />,    query: 'groceries', category: 'Grocery', bg: 'bg-[#EAF7EE]' },
 ];
 
 export default function CategoriesPage() {
@@ -80,7 +80,7 @@ export default function CategoriesPage() {
           {ELECTRONICS.map((cat) => (
             <Link
               key={cat.name}
-              to={`/search?q=${encodeURIComponent(cat.query)}`}
+              to={cat.category ? `/search?category=${encodeURIComponent(cat.category)}` : `/search?q=${encodeURIComponent(cat.query)}`}
               className="flex items-center justify-between p-4 bg-white border border-[#E5E7EB] rounded-[14px] hover:border-[#111111] hover:shadow-sm transition-all group"
             >
               <div className="flex items-center gap-3">
@@ -111,7 +111,7 @@ export default function CategoriesPage() {
           {FASHION.map((cat) => (
             <Link
               key={cat.name}
-              to={`/search?q=${encodeURIComponent(cat.query)}`}
+              to={cat.category ? `/search?category=${encodeURIComponent(cat.category)}` : `/search?q=${encodeURIComponent(cat.query)}`}
               className="flex items-center justify-between p-4 bg-white border border-[#E5E7EB] rounded-[14px] hover:border-[#111111] hover:shadow-sm transition-all group"
             >
               <div className="flex items-center gap-3">

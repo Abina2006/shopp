@@ -1011,17 +1011,11 @@ export async function smartSearch(rawQuery, userParams = {}) {
   } else if (/\b(laptop|laptops)\b/i.test(qLower)) {
     detectedCategory = 'Electronics';
     detectedProduct = 'Laptop';
-    if (!userParams.specs && !userParams.skipClarification && !/\b(acer|nitro|hp|macbook|dell|lenovo|asus)\b/i.test(qLower)) {
-      needsClarification = true;
-      clarificationType = 'laptop_specs';
-    }
-  } else if (/\b(mobile|mobiles|phone|phones|smartphone|smartphones)\b/i.test(qLower) && !/\b(iphone|samsung|pixel|oneplus|realme|redmi)\b/i.test(qLower)) {
+    needsClarification = false;
+  } else if (/\b(mobile|mobiles|phone|phones|smartphone|smartphones)\b/i.test(qLower)) {
     detectedCategory = 'Electronics';
     detectedProduct = 'Mobile';
-    if (!userParams.specs && !userParams.skipClarification) {
-      needsClarification = true;
-      clarificationType = 'mobile_specs';
-    }
+    needsClarification = false;
   } else if (/\b(monster|red bull|sting)\b/i.test(qLower)) {
     detectedCategory = 'Grocery';
     detectedProduct = 'Monster Energy Drink';
@@ -1058,10 +1052,60 @@ export async function smartSearch(rawQuery, userParams = {}) {
   };
 
   // Search DB for matching products
+  const categoryAliases = {
+    phone: ['Smartphones', 'Mobile'],
+    phones: ['Smartphones', 'Mobile'],
+    mobile: ['Smartphones', 'Mobile'],
+    mobiles: ['Smartphones', 'Mobile'],
+    smartphone: ['Smartphones', 'Mobile'],
+    smartphones: ['Smartphones', 'Mobile'],
+    laptop: ['Computers', 'Laptops'],
+    laptops: ['Computers', 'Laptops'],
+    computer: ['Computers', 'Laptops'],
+    computers: ['Computers', 'Laptops'],
+    headphones: ['Audio'],
+    headphone: ['Audio'],
+    audio: ['Audio'],
+    earphones: ['Audio'],
+    earbuds: ['Audio'],
+    watch: ['Wearables'],
+    smartwatch: ['Wearables'],
+    shoes: ['Footwear'],
+    footwear: ['Footwear'],
+    appliance: ['Appliances'],
+    appliances: ['Appliances'],
+    soap: ['Personal Care'],
+    perfume: ['Personal Care'],
+    fragrance: ['Personal Care'],
+    sunglasses: ['Fashion'],
+    fashion: ['Fashion'],
+    grocery: ['Groceries', 'Grocery'],
+    groceries: ['Groceries', 'Grocery'],
+    'power bank': ['General']
+  };
+
+  const matchedCatNames = [];
+  Object.entries(categoryAliases).forEach(([k, cats]) => {
+    if (qLower.includes(k)) {
+      matchedCatNames.push(...cats);
+    }
+  });
+
   const tokens = query.split(/\s+/).filter(Boolean);
   let where = {};
   if (qLower === 'all') {
     where = {};
+  } else if (matchedCatNames.length > 0) {
+    where = {
+      OR: [
+        { category: { in: matchedCatNames } },
+        ...tokens.map(t => ({ name: { contains: t, mode: 'insensitive' } })),
+        ...tokens.map(t => ({ brand: { contains: t, mode: 'insensitive' } })),
+        ...tokens.map(t => ({ category: { contains: t, mode: 'insensitive' } })),
+        ...tokens.map(t => ({ subcategory: { contains: t, mode: 'insensitive' } })),
+        ...tokens.map(t => ({ description: { contains: t, mode: 'insensitive' } })),
+      ]
+    };
   } else if (tokens.length === 1) {
     const t = tokens[0];
     where = {
@@ -1248,6 +1292,75 @@ export async function smartSearch(rawQuery, userParams = {}) {
     };
   });
 
+  // Process DB products
+  const processedDbProducts = (dbProducts || []).map(p => {
+    const rawListings = p.listings || [];
+    const listings = rawListings.map(l => {
+      const seller = l.sellerName || l.marketplace || 'Marketplace';
+      const buyUrl = l.productUrl || l.sellerUrl || getMarketplaceBuyUrl(p, seller);
+      return {
+        id: l.id || `list_${p.id}_${seller.toLowerCase().replace(/\s+/g, '')}`,
+        listingId: l.id || `list_${p.id}_${seller.toLowerCase().replace(/\s+/g, '')}`,
+        marketplace: seller,
+        sellerName: seller,
+        sellerUrl: buyUrl,
+        productUrl: buyUrl,
+        buyUrl: buyUrl,
+        urlType: 'search',
+        isDemo: true,
+        price: parseFloat(l.price) || 0,
+        original_price: parseFloat(l.originalPrice) || parseFloat(l.price) || 0,
+        originalPrice: parseFloat(l.originalPrice) || parseFloat(l.price) || 0,
+        discount: l.discount || 0,
+        currency: l.currency || 'INR',
+        rating: parseFloat(l.rating) || 4.5,
+        reviewCount: parseInt(l.reviewCount, 10) || 100,
+        deliveryTime: l.deliveryTime || '2-3 Days Delivery',
+        availability: l.availability || 'IN_STOCK',
+        priceStatus: l.priceStatus || 'VERIFIED',
+        priceStatusLabel: 'VERIFIED'
+      };
+    });
+
+    const lowestInfo = findLowestPrice(listings);
+    const categoryType = (['Grocery', 'Snacks & Beverages', 'Groceries', 'Personal Care'].includes(p.category)) ? 'GROCERY' : 'ELECTRONICS';
+
+    return {
+      id: p.id,
+      productId: p.id,
+      name: p.name,
+      category: p.category,
+      categoryType: p.categoryType || categoryType,
+      subcategory: p.subcategory || 'General',
+      brand: p.brand || 'Generic',
+      quantity: p.baseQuantity,
+      unit: p.baseUnit,
+      baseQuantity: p.baseQuantity,
+      baseUnit: p.baseUnit,
+      packSize: p.baseQuantity && p.baseUnit ? `${p.baseQuantity} ${p.baseUnit}` : null,
+      imageUrl: p.imageUrl,
+      imageAlt: p.name,
+      description: p.description,
+      demoStatus: 'VERIFIED',
+      listings,
+      lowestPriceListing: lowestInfo.lowestPriceListing,
+      bestUnitValueListing: lowestInfo.bestUnitValueListing,
+      savings: lowestInfo.savings,
+      savingsPercent: lowestInfo.savingsPercent
+    };
+  });
+
+  // Combine DB products and mock catalog products, deduplicating by name
+  const seenNames = new Set();
+  const allMergedProducts = [];
+  for (const prod of [...processedDbProducts, ...processedMockCatalogProducts]) {
+    const key = (prod.name || '').toLowerCase().trim();
+    if (!seenNames.has(key)) {
+      seenNames.add(key);
+      allMergedProducts.push(prod);
+    }
+  }
+
   return {
     query,
     geminiUsed,
@@ -1262,6 +1375,6 @@ export async function smartSearch(rawQuery, userParams = {}) {
     clarificationType,
     providerStatus,
     externalResultsCount: 0,
-    products: processedMockCatalogProducts
+    products: allMergedProducts
   };
 }
