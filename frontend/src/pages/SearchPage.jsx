@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { Search, Filter, ArrowUpDown, Package, Sparkles, Smartphone, Laptop, AlertCircle, CheckCircle2, Lock, LogIn, UserPlus, Zap } from 'lucide-react';
 import api from '../services/api';
+import { cachedGet } from '../services/cache';
 import ProductCard from '../components/ProductCard';
 import { useAuth } from '../context/AuthContext';
 
@@ -99,7 +100,8 @@ export default function SearchPage() {
       if (searchParams.get('brand')) params.brand = searchParams.get('brand');
       if (searchParams.get('budget')) params.budget = searchParams.get('budget');
 
-      const res = await api.get('/products/smart-search', { params });
+      // Use cache: same search returns instantly without API call (TTL: 2 min)
+      const res = await cachedGet(api, '/products/smart-search', { params }, 2 * 60 * 1000);
       const smartData = res.data?.data;
       setSearchMeta(smartData);
       setProducts(smartData?.products || []);
